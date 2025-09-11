@@ -1,0 +1,13 @@
+# Azure Speech Services Configuration
+# Get these from https://portal.azure.com -> Cognitive Services -> Speech Services
+
+AZURE_SPEECH_KEY=your_azure_speech_key_here
+AZURE_SPEECH_REGION=your_azure_region_here
+
+# Example regions:
+# eastus, westus2, westcentralus, southeastasia, northeurope, westeurope
+
+# To use these environment variables:
+# 1. Copy this file to .env
+# 2. Fill in your actual Azure Speech Services credentials
+# 3. Run: source .env (on Linux/Mac) or set the variables in your system

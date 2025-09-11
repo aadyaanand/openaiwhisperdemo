@@ -1,16 +1,18 @@
-# OpenAI Whisper Demo
+# Voice-to-Text Comparison Demo
 
-A comprehensive demonstration of the OpenAI Whisper speech-to-text model with both command-line and web interfaces.
+A comprehensive demonstration comparing OpenAI Whisper and Azure Speech Services for speech-to-text, designed for IPMD testing and evaluation.
 
 ## Features
 
-- 🎤 **Audio Transcription**: Convert speech to text using OpenAI's Whisper model
-- 🌐 **Web Interface**: User-friendly web application for uploading and transcribing audio files
+- 🔄 **Service Comparison**: Side-by-side comparison of OpenAI Whisper vs Azure Speech Services
+- 🎤 **Audio Transcription**: Convert speech to text using both services
+- 🌐 **Web Interface**: User-friendly web application with tabbed interface
 - 📁 **Batch Processing**: Process multiple audio files at once
 - 🗣️ **Language Detection**: Automatic language detection or manual specification
 - ⏱️ **Timestamps**: Detailed transcription with word-level timestamps
 - 🚀 **Multiple Models**: Support for different Whisper model sizes (tiny, base, small, medium, large)
-- 📊 **Performance Metrics**: Processing time and speed ratio information
+- 📊 **Performance Metrics**: Processing time, speed ratios, and detailed comparison
+- 🎯 **IPMD Focused**: Designed specifically for testing and evaluation purposes
 
 ## Installation
 
@@ -25,27 +27,50 @@ A comprehensive demonstration of the OpenAI Whisper speech-to-text model with bo
    pip install -r requirements.txt
    ```
 
-3. **Verify installation**
+3. **Configure Azure Speech Services (Optional)**
+   ```bash
+   # Copy the example configuration
+   cp azure_config_example.txt .env
+   
+   # Edit .env with your Azure credentials
+   # Get credentials from: https://portal.azure.com -> Cognitive Services -> Speech Services
+   ```
+
+4. **Verify installation**
    ```bash
    python whisper_demo.py --help
    ```
 
 ## Quick Start
 
-### Web Interface (Recommended)
+### Comparison Web Interface (Recommended)
 
-1. **Start the web server**
+1. **Start the comparison web server**
    ```bash
-   python web_app.py
+   python comparison_web_app.py
    ```
 
 2. **Open your browser**
-   Navigate to `http://localhost:5000`
+   Navigate to `http://localhost:5002`
 
-3. **Upload and transcribe**
-   - Select an audio file
-   - Optionally specify a language
-   - Click "Transcribe Audio"
+3. **Test both services**
+   - Choose "Compare Both" to test Whisper vs Azure
+   - Choose "Whisper Only" or "Azure Only" for single service
+   - Upload an audio file or record directly
+   - View side-by-side comparison results
+
+### Individual Service Testing
+
+1. **Whisper-only web interface**
+   ```bash
+   python web_app.py
+   # Navigate to http://localhost:5001
+   ```
+
+2. **Azure-only command line**
+   ```bash
+   python azure_speech_demo.py --audio your_audio.wav --key YOUR_AZURE_KEY --region YOUR_REGION
+   ```
 
 ### Command Line Interface
 
