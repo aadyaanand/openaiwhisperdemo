@@ -111,6 +111,61 @@ def upload_file():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/asterisk-upload', methods=['POST'])
+def asterisk_upload():
+    """Handle file upload for Asterisk AEAP transcription."""
+    try:
+        if 'audio_file' not in request.files:
+            return jsonify({'error': 'No audio file provided'}), 400
+        
+        file = request.files['audio_file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        # Debug information
+        print(f"Asterisk file details - Filename: {file.filename}, Content-Type: {file.content_type}")
+        
+        if not is_valid_audio_file(file):
+            return jsonify({'error': 'Invalid file type. Allowed: ' + ', '.join(ALLOWED_EXTENSIONS) + ' or recorded audio'}), 400
+        
+        # Get language parameter
+        language = request.form.get('language', '').strip()
+        if not language:
+            language = 'en-US'
+        
+        # Save uploaded file
+        filename = secure_filename(file.filename)
+        os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        
+        # Send to Asterisk server
+        import requests
+        
+        asterisk_url = 'http://localhost:3001/transcribe'
+        
+        with open(filepath, 'rb') as audio_file:
+            files = {'audio_file': (filename, audio_file, file.content_type)}
+            data = {'language': language}
+            
+            try:
+                response = requests.post(asterisk_url, files=files, data=data, timeout=60)
+                response.raise_for_status()
+                result = response.json()
+                
+                # Clean up uploaded file
+                os.remove(filepath)
+                
+                return jsonify(result)
+                
+            except requests.exceptions.RequestException as e:
+                # Clean up uploaded file
+                os.remove(filepath)
+                return jsonify({'error': f'Asterisk server error: {str(e)}'}), 500
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/health')
 def health():
     """Health check endpoint."""

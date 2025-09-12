@@ -49,6 +49,62 @@
             padding: 40px;
         }
 
+        .engine-selection {
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #dee2e6;
+        }
+
+        .engine-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .engine-btn {
+            background: #e9ecef;
+            color: #495057;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .engine-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .engine-btn:hover:not(.active) {
+            background: #dee2e6;
+            transform: translateY(-1px);
+        }
+
+        .engine-info {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .engine-info p {
+            margin: 0;
+            color: #333;
+            line-height: 1.5;
+        }
+
         .input-selection {
             margin-bottom: 30px;
         }
@@ -404,11 +460,27 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎤 OpenAI Whisper Demo</h1>
-            <p>Upload an audio file or record directly to get instant transcription</p>
+            <h1>🎤 Voice-to-Text Testing Platform</h1>
+            <p>Test different speech recognition engines: Whisper (Python) vs Asterisk AEAP (JavaScript)</p>
         </div>
         
         <div class="content">
+            <!-- Engine Selection -->
+            <div class="engine-selection">
+                <h3>Choose Speech Recognition Engine</h3>
+                <div class="engine-tabs">
+                    <button class="engine-btn active" id="whisperTab" onclick="switchEngine('whisper')">
+                        🐍 OpenAI Whisper (Python)
+                    </button>
+                    <button class="engine-btn" id="asteriskTab" onclick="switchEngine('asterisk')">
+                        ⚡ Asterisk AEAP (JavaScript)
+                    </button>
+                </div>
+                <div class="engine-info" id="engineInfo">
+                    <p><strong>OpenAI Whisper:</strong> Advanced AI model with high accuracy, supports 99+ languages, offline processing</p>
+                </div>
+            </div>
+
             <!-- Audio Input Selection -->
             <div class="input-selection">
                 <h3>Choose Audio Input Method</h3>
@@ -495,6 +567,31 @@
         let isRecording = false;
         let recordingStartTime = null;
         let recordingTimer = null;
+        let currentEngine = 'whisper';
+
+        // Engine switching
+        function switchEngine(engine) {
+            const whisperTab = document.getElementById('whisperTab');
+            const asteriskTab = document.getElementById('asteriskTab');
+            const engineInfo = document.getElementById('engineInfo');
+            const transcribeBtn = document.getElementById('transcribeBtn');
+
+            currentEngine = engine;
+
+            if (engine === 'whisper') {
+                whisperTab.classList.add('active');
+                asteriskTab.classList.remove('active');
+                engineInfo.innerHTML = '<p><strong>OpenAI Whisper:</strong> Advanced AI model with high accuracy, supports 99+ languages, offline processing</p>';
+                transcribeBtn.textContent = '🎯 Transcribe with Whisper';
+                transcribeBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+            } else {
+                asteriskTab.classList.add('active');
+                whisperTab.classList.remove('active');
+                engineInfo.innerHTML = '<p><strong>Asterisk AEAP:</strong> Real-time streaming, Google Speech API integration, designed for telephony systems</p>';
+                transcribeBtn.textContent = '⚡ Transcribe with Asterisk';
+                transcribeBtn.style.background = 'linear-gradient(135deg, #ff6b35 0%, #f7931e 100%)';
+            }
+        }
 
         // Tab switching
         function switchTab(tab) {
@@ -681,9 +778,18 @@
             results.style.display = 'none';
             error.style.display = 'none';
 
+            // Update loading message based on engine
+            const loadingText = document.querySelector('#loading p');
+            if (currentEngine === 'whisper') {
+                loadingText.textContent = 'Processing with OpenAI Whisper... This may take a few moments.';
+            } else {
+                loadingText.textContent = 'Processing with Asterisk AEAP... Connecting to Google Speech API.';
+            }
+
             // Prepare form data
             const formData = new FormData();
             formData.append('audio_file', selectedFile);
+            formData.append('engine', currentEngine);
             
             const language = document.getElementById('language').value.trim();
             if (language) {
@@ -691,7 +797,8 @@
             }
 
             try {
-                const response = await fetch('/upload', {
+                const endpoint = currentEngine === 'whisper' ? '/upload' : '/asterisk-upload';
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     body: formData
                 });
@@ -699,7 +806,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    displayResults(data);
+                    displayResults(data, currentEngine);
                 } else {
                     showError(data.error || 'Transcription failed');
                 }
@@ -711,14 +818,21 @@
             }
         }
 
-        function displayResults(data) {
+        function displayResults(data, engine) {
             const results = document.getElementById('results');
             const metadata = document.getElementById('metadata');
             const transcriptionText = document.getElementById('transcriptionText');
             const segments = document.getElementById('segments');
 
-            // Display metadata
+            // Display metadata with engine-specific info
+            const engineName = engine === 'whisper' ? 'OpenAI Whisper' : 'Asterisk AEAP';
+            const engineIcon = engine === 'whisper' ? '🐍' : '⚡';
+            
             metadata.innerHTML = `
+                <div class="metadata-item">
+                    <div class="label">Engine</div>
+                    <div class="value">${engineIcon} ${engineName}</div>
+                </div>
                 <div class="metadata-item">
                     <div class="label">Language</div>
                     <div class="value">${data.language}</div>
@@ -735,6 +849,12 @@
                     <div class="label">Speed Ratio</div>
                     <div class="value">${data.speed_ratio.toFixed(2)}x</div>
                 </div>
+                ${engine === 'asterisk' ? `
+                <div class="metadata-item">
+                    <div class="label">Confidence</div>
+                    <div class="value">${data.confidence ? (data.confidence * 100).toFixed(1) + '%' : 'N/A'}</div>
+                </div>
+                ` : ''}
             `;
 
             // Display transcription

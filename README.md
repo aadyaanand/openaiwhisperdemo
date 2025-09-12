@@ -1,76 +1,89 @@
-# Voice-to-Text Comparison Demo
+# IPMD Voice-to-Text Testing Platform
 
-A comprehensive demonstration comparing OpenAI Whisper and Azure Speech Services for speech-to-text, designed for IPMD testing and evaluation.
+A comprehensive testing platform for comparing different speech-to-text engines: OpenAI Whisper (Python) and Asterisk AEAP (JavaScript/Node.js). Built for IPMD to evaluate and compare voice recognition solutions.
 
 ## Features
 
-- 🔄 **Service Comparison**: Side-by-side comparison of OpenAI Whisper vs Azure Speech Services
-- 🎤 **Audio Transcription**: Convert speech to text using both services
-- 🌐 **Web Interface**: User-friendly web application with tabbed interface
-- 📁 **Batch Processing**: Process multiple audio files at once
-- 🗣️ **Language Detection**: Automatic language detection or manual specification
-- ⏱️ **Timestamps**: Detailed transcription with word-level timestamps
-- 🚀 **Multiple Models**: Support for different Whisper model sizes (tiny, base, small, medium, large)
-- 📊 **Performance Metrics**: Processing time, speed ratios, and detailed comparison
-- 🎯 **IPMD Focused**: Designed specifically for testing and evaluation purposes
+### 🐍 OpenAI Whisper (Python)
+- **Advanced AI Model**: High accuracy speech recognition with 99+ language support
+- **Offline Processing**: Works without internet connection
+- **Multiple Model Sizes**: tiny, base, small, medium, large for speed/accuracy tradeoffs
+- **Word-level Timestamps**: Detailed transcription with precise timing
+- **Language Detection**: Automatic language identification
+
+### ⚡ Asterisk AEAP (JavaScript/Node.js)
+- **Real-time Streaming**: Designed for telephony systems
+- **Google Speech API**: Cloud-based processing with high accuracy
+- **AEAP Protocol**: Asterisk External Application Protocol integration
+- **Confidence Scores**: Detailed confidence metrics for each transcription
+- **WebSocket Support**: Real-time communication with Asterisk
+
+### 🌐 Unified Web Interface
+- **Side-by-side Comparison**: Test both engines with the same audio
+- **Recording & Upload**: Direct microphone recording or file upload
+- **Performance Metrics**: Processing time, speed ratios, and accuracy scores
+- **Mobile Responsive**: Works on desktop and mobile devices
+- **Batch Processing**: Process multiple files with different engines
 
 ## Installation
 
 1. **Clone or download this repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/aadyaanand/openaiwhisperdemo.git
    cd openaiwhisperdemo
    ```
 
 2. **Install Python dependencies**
    ```bash
-   pip install -r requirements.txt
+   python3 setup.py
    ```
 
-3. **Configure Azure Speech Services (Optional)**
+3. **Install Node.js dependencies (for Asterisk AEAP)**
    ```bash
-   # Copy the example configuration
-   cp azure_config_example.txt .env
-   
-   # Edit .env with your Azure credentials
-   # Get credentials from: https://portal.azure.com -> Cognitive Services -> Speech Services
+   python3 setup_asterisk.py
    ```
 
-4. **Verify installation**
+4. **Set up Google Speech API credentials (for Asterisk AEAP)**
    ```bash
-   python whisper_demo.py --help
+   export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
+   ```
+
+5. **Verify installation**
+   ```bash
+   python3 test_demo.py
    ```
 
 ## Quick Start
 
-### Comparison Web Interface (Recommended)
+### Complete Platform (Both Engines)
 
-1. **Start the comparison web server**
+1. **Start the entire platform**
    ```bash
-   python comparison_web_app.py
+   python3 start_platform.py
    ```
 
 2. **Open your browser**
-   Navigate to `http://localhost:5002`
+   Navigate to `http://localhost:5001`
 
-3. **Test both services**
-   - Choose "Compare Both" to test Whisper vs Azure
-   - Choose "Whisper Only" or "Azure Only" for single service
+3. **Test both engines**
+   - Choose between Whisper (Python) or Asterisk AEAP (JavaScript)
    - Upload an audio file or record directly
-   - View side-by-side comparison results
+   - Compare results side-by-side
 
-### Individual Service Testing
+### Individual Engines
 
-1. **Whisper-only web interface**
-   ```bash
-   python web_app.py
-   # Navigate to http://localhost:5001
-   ```
+**Whisper Only:**
+```bash
+python3 web_app.py
+# Access at http://localhost:5001
+```
 
-2. **Azure-only command line**
-   ```bash
-   python azure_speech_demo.py --audio your_audio.wav --key YOUR_AZURE_KEY --region YOUR_REGION
-   ```
+**Asterisk AEAP Only:**
+```bash
+cd asterisk-server
+node index.js
+# Access at http://localhost:3001
+```
 
 ### Command Line Interface
 
