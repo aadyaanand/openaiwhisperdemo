@@ -240,7 +240,6 @@ Health check endpoint.
 
 4. **Web interface not loading**
    - Check if port 5000 is available
-   - Try accessing `http://127.0.0.1:5000`
    - Check firewall settings
 
 ### Getting Help
